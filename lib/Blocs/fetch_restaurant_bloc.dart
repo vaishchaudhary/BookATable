@@ -13,12 +13,17 @@ class RestaurantBloc
   void fetchRestaurants(SearchLocation location) {
     add(FetchRestauarntEvent(location));
   }
-
+  void addLoader() {
+    add(AddLoader());
+  }
   @override
   Stream<RestaurantStates> mapEventToState(
       RestaurantEvents event) async* {
+    if (event is AddLoader){
+      yield RestaurantStates(status:Status.loading,event:event,data:null);
+    }
     if (event is FetchRestauarntEvent) {
-     try
+  //   try
       {
         yield RestaurantStates(status:Status.loading,event:event,data:null);
         double lat=event.searchLocation.lat;
@@ -29,10 +34,9 @@ class RestaurantBloc
         } else {
           yield RestaurantStates(status:Status.error,event:event,data:null);        }
       }
-      on Error catch(err){
-        print('Something Went wrong ${err}');
-        yield RestaurantStates(status:Status.error,event:event,data:null);      } on Exception catch(error){
-      }
-    }
+    //   on Error catch(err){
+    //     print('Something Went wrong ${err}');
+    //     yield RestaurantStates(status:Status.error,event:event,data:null);      }
+     }
   }
 }

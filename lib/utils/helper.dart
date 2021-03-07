@@ -123,27 +123,25 @@ String menuToday = "0";
 String currentAddress = "";
 
 List dailyFoodList = [];
-void showGetDirectionMap() async {
+void showGetDirectionMap(SearchLocation searchLocation) async {
   try {
     final availableMaps = await MapLauncher.installedMaps;
-    print(availableMaps); // [AvailableMap { mapName: Google Maps, mapType: google }, ...]
-
+    print(availableMaps);
     await availableMaps.first.showMarker(
-      coords: Coords(31.233568, 121.505504),
-      title: "Shanghai Tower",
-      description: "Asia's tallest building",
+      coords: Coords(searchLocation.lat,searchLocation.long),
+      title: searchLocation.title,
+      description: searchLocation.description,
     );
     if (await MapLauncher.isMapAvailable(MapType.google)) {
       await MapLauncher.launchMap(
         mapType: MapType.google,
-        coords: Coords(31.233568, 121.505504),
-        title: 'address',
-        description: 'restaurant address',
+        coords: Coords(searchLocation.lat,searchLocation.long),
+        title: searchLocation.title,
+        description: searchLocation.description,
       );
     }
   } on Exception {
-    // Scaffold.of(context)
-    //     .showSnackBar(SnackBar(content: Text('Error launching Map')));
+
   }
 
 }

@@ -331,47 +331,47 @@ class Restaurant {
 class R {
   int resId;
   bool isGroceryStore;
-  HasMenuStatus hasMenuStatus;
+  // HasMenuStatus hasMenuStatus;
 
-  R({this.resId, this.isGroceryStore, this.hasMenuStatus});
+  R({this.resId, this.isGroceryStore});
 
   R.fromJson(Map<String, dynamic> json) {
     resId = json['res_id'];
     isGroceryStore = json['is_grocery_store'];
-    hasMenuStatus = json['has_menu_status'] != null
-        ? new HasMenuStatus.fromJson(json['has_menu_status'])
-        : null;
+    // hasMenuStatus = json['has_menu_status'] != null
+    //     ? new HasMenuStatus.fromJson(json['has_menu_status'])
+    //     : null;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['res_id'] = this.resId;
     data['is_grocery_store'] = this.isGroceryStore;
-    if (this.hasMenuStatus != null) {
-      data['has_menu_status'] = this.hasMenuStatus.toJson();
-    }
+    // if (this.hasMenuStatus != null) {
+    //   data['has_menu_status'] = this.hasMenuStatus.toJson();
+    // }
     return data;
   }
 }
 
-class HasMenuStatus {
-  int delivery;
-  int takeaway;
-
-  HasMenuStatus({this.delivery, this.takeaway});
-
-  HasMenuStatus.fromJson(Map<String, dynamic> json) {
-    delivery = json['delivery'];
-    takeaway = json['takeaway'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['delivery'] = this.delivery;
-    data['takeaway'] = this.takeaway;
-    return data;
-  }
-}
+// class HasMenuStatus {
+//   int delivery;
+//   bool takeaway;
+//
+//   HasMenuStatus({this.delivery, this.takeaway});
+//
+//   // HasMenuStatus.fromJson(Map<String, dynamic> json) {
+//   //   delivery = json['delivery'];
+//   //   takeaway = json['takeaway'];
+//   // }
+//
+//   Map<String, dynamic> toJson() {
+//     final Map<String, dynamic> data = new Map<String, dynamic>();
+//     data['delivery'] = this.delivery;
+//     data['takeaway'] = this.takeaway;
+//     return data;
+//   }
+// }
 
 class LocationAddress {
   String address;

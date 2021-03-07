@@ -2,20 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:toast/toast.dart';
 
-class Home extends StatefulWidget {
+class PaymentHome extends StatefulWidget {
+  final double amount;
+  final Function successfull;
+  final Function failure;
+  const PaymentHome({Key key, this.amount,this.successfull,this.failure}) : super(key: key);
   @override
-  _HomeState createState() => _HomeState();
+  _PaymentHomeState createState() => _PaymentHomeState();
 }
 
-class _HomeState extends State<Home> {
+class _PaymentHomeState extends State<PaymentHome> {
 
   Razorpay razorpay;
   TextEditingController textEditingController = new TextEditingController();
-  int amount=10;
+  double amount=10;
   @override
   void initState() {
     super.initState();
-
+   amount=widget.amount;
     razorpay = new Razorpay();
     textEditingController.text='\u{20B9} ${amount}';
     razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, handlerPaymentSuccess);
@@ -29,14 +33,13 @@ class _HomeState extends State<Home> {
     super.dispose();
     razorpay.clear();
   }
-
   void openCheckout(){
     var options = {
       "key" : "rzp_test_a5TVoLjVT5I3hb",
       "currency": "INR",
       "amount" : amount*100,
       "name" : "Sample App",
-      "description" : "Payment for the some random product",
+      "description" : "Payment for booking a table in restaurant",
       // "prefill" : {
       //   "contact" : "2323232323",
       //   "email" : "shdjsdh@gmail.com"
@@ -51,24 +54,30 @@ class _HomeState extends State<Home> {
 
     }catch(e){
       print(e.toString());
+      widget.failure();
+      Navigator.pop(context);
     }
 
   }
 
   void handlerPaymentSuccess(){
     print("Pament success");
-    Toast.show("Pament success", context);
+    //Toast.show("Pament success", context);
+    widget.successfull();
     Navigator.pop(context);
   }
 
   void handlerErrorFailure(){
     print("Pament error");
-    Toast.show("Pament error", context);
+    widget.failure();
+    Navigator.pop(context);
+   // Toast.show("Pament error", context);
   }
 
   void handlerExternalWallet(){
     print("External Wallet");
-    Toast.show("External Wallet", context);
+  //  Toast.show("External Wallet", context);
+    Navigator.pop(context);
   }
 
   @override

@@ -7,3 +7,6 @@ class FetchRestauarntEvent extends RestaurantEvents{
   SearchLocation searchLocation;
   FetchRestauarntEvent(this.searchLocation);
 }
+class AddLoader extends RestaurantEvents{
+  AddLoader();
+}
