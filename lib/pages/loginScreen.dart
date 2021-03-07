@@ -14,7 +14,7 @@ class _LoginScreenState extends State<LoginScreen> {
   String email;
   String password;
   GlobalKey<FormState> formkey = GlobalKey<FormState>();
-
+  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   void login() {
     if (formkey.currentState.validate()) {
       formkey.currentState.save();
@@ -23,7 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
           Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => TasksPage(uid: value.uid),
+                builder: (context) => MyTask(),
               ));
         }
       });
@@ -32,13 +32,21 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return
+      MaterialApp(
+        home:
+      Scaffold(
+        key: scaffoldKey,
       body: Center(
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              FlutterLogo(
-                size: 50.0,
+              Image(
+                image: AssetImage('assets/bookATableLogo.jpg'),
+                height: 100,
+                width: 100,
+                fit: BoxFit.contain,
+                // color: Colors.orange,
               ),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 20.0),
@@ -88,15 +96,24 @@ class _LoginScreenState extends State<LoginScreen> {
                       RaisedButton(
                         // passing an additional context parameter to show dialog boxs
                         onPressed: login,
-                        color: Colors.green,
+                        color: Colors.cyan,
                         textColor: Colors.white,
                         child: Text(
                           "Login",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 1.2,
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
+              ),
+              SizedBox(
+                height: 5.0,
               ),
               MaterialButton(
                 padding: EdgeInsets.zero,
@@ -104,30 +121,84 @@ class _LoginScreenState extends State<LoginScreen> {
                   FirebaseUser user = await FirebaseAuth.instance.currentUser();
 
                   Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => TasksPage(uid: user.uid)));
+                      builder: (context) => MyTask()));
                 }),
                 child: Image(
-                  image: AssetImage('assets/signin.png'),
-                  width: 200.0,
+                  image: AssetImage('assets/googleSignIn.png'),
+                  width: 300.0,
+                  height: 50,
+                  fit: BoxFit.contain,
+                ),
+              ),
+              MaterialButton(
+                padding: EdgeInsets.zero,
+                onPressed: ()  async {
+                  bool value=await signInWithFacebook();
+                  if(value) {
+                    FirebaseUser user = await FirebaseAuth.instance
+                        .currentUser();
+
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (context) => MyTask()));
+                  }else{
+                    scaffoldKey.currentState.showSnackBar(
+                      SnackBar(
+                          content: Text('Unable to continue with Facebook using this account'),
+                        backgroundColor: Colors.orangeAccent,
+                      )
+                    );
+                  }
+                },
+                child: Image(
+                  image: AssetImage('assets/facebookSignIn.png'),
+                  width: 300.0,
+                  height: 50,
+                  fit: BoxFit.contain,
+
                 ),
               ),
               SizedBox(
                 height: 10.0,
               ),
-              InkWell(
-                onTap: () {
-                  // send to login screen
-                  Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => SignUpScreen()));
-                },
-                child: Text(
-                  "Sign Up Here",
-                ),
-              ),
+
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text:"Don't have account? ",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                      WidgetSpan(child:
+                      InkWell(
+                          onTap: () {
+                            // send to login screen
+                            Navigator.of(context).push(
+                                MaterialPageRoute(builder: (context) => SignUpScreen()));
+                          },
+                          child:
+                          Text(
+                            "Sign Up Here",
+                            style: TextStyle(
+                              color: Colors.cyan,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                      )
+                      )
+                        ]
+                      ),
+                    )
             ],
           ),
         ),
       ),
-    );
+    ));
   }
 }

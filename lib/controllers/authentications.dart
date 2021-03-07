@@ -1,10 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 FirebaseAuth auth = FirebaseAuth.instance;
 final gooleSignIn = GoogleSignIn();
+final facebookSignIn =FacebookAuth.instance;
 
 // a simple sialog to be visible everytime some error occurs
 showErrDialog(BuildContext context, String err) {
@@ -48,7 +51,48 @@ Future<bool> googleSignIn() async {
     return Future.value(true);
   }
 }
+Future<bool> signInWithFacebook() async {
+  try {
+    final FacebookLogin facebookSignIn = new FacebookLogin();
+    final FacebookLoginResult result =
+    await facebookSignIn.logIn(['email']);
+    switch (result.status) {
+      case FacebookLoginStatus.loggedIn:
+        final FacebookAccessToken accessToken = result.accessToken;
+        final facebookAuthCredential =
+        FacebookAuthProvider.getCredential(
+            accessToken: accessToken.token);
+        AuthResult result1 = await auth.signInWithCredential(
+            facebookAuthCredential);
+        FirebaseUser user = await auth.currentUser();
+        print('''
+         Logged in!
+         
+         Token: ${accessToken.token}
+         User id: ${accessToken.userId}
+         Expires: ${accessToken.expires}
+         Permissions: ${accessToken.permissions}
+         Declined permissions: ${accessToken.declinedPermissions}
+         ''');
+        break;
+      case FacebookLoginStatus.cancelledByUser:
+        print('Login cancelled by the user.');
+        return Future.value(false);
+        break;
+      case FacebookLoginStatus.error:
+        print('Something went wrong with the login process.\n'
+            'Here\'s the error Facebook gave us: ${result.errorMessage}');
+        return Future.value(false);
+        break;
+    }
+//var accessToken=await facebookSignIn.currentAccessToken;
 
+    //print('${user?.uid}');
+    return Future.value(true);
+  } on Exception catch(e){
+    return Future.value(false);
+  }
+}
 // instead of returning true or false
 // returning user to directly access UserID
 Future<FirebaseUser> signin(
@@ -56,7 +100,7 @@ Future<FirebaseUser> signin(
   try {
     AuthResult result =
         await auth.signInWithEmailAndPassword(email: email, password: email);
-    FirebaseUser user = result.user;
+    FirebaseUser user = result?.user;
     // return Future.value(true);
     return Future.value(user);
   } catch (e) {
@@ -96,7 +140,7 @@ Future<FirebaseUser> signUp(
   try {
     AuthResult result = await auth.createUserWithEmailAndPassword(
         email: email, password: email);
-    FirebaseUser user = result.user;
+    FirebaseUser user = result?.user;
     return Future.value(user);
     // return Future.value(true);
   } catch (error) {
@@ -118,9 +162,12 @@ Future<FirebaseUser> signUp(
 Future<bool> signOutUser() async {
   FirebaseUser user = await auth.currentUser();
   print(user.providerData[1].providerId);
-  if (user.providerData[1].providerId == 'google.com') {
-    await gooleSignIn.disconnect();
-  }
+  // if (user.providerData[1].providerId == 'google.com') {
+  //   await gooleSignIn.disconnect();
+  // }
+  // else if (user.providerData[1].providerId == 'facebook.com') {
+  //   await facebookSignIn.logOut();
+  // }
   await auth.signOut();
   return Future.value(true);
 }
